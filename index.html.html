@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- গুগল এই টাইটেল দেখেই আপনার মাদরাসার সাইট খুঁজে পাবে -->
+    <title>ফলাফল পোর্টাল - রহমতপুর হোসাইনিয়া ফয়জুল উলুম মাদরাসা | Rahmatpur Hosainiya Faizul Ulom</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 0; }
+        .navbar { background-color: #1b5e20; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid #1b5e20; }
+        h3 { text-align: center; color: #1b5e20; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #333; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px; }
+        .btn { width: 100%; padding: 14px; background-color: #1b5e20; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        .btn:hover { background-color: #0f3d13; }
+        .result-box { display: none; margin-top: 30px; padding: 20px; border: 1px solid #1b5e20; border-radius: 8px; background-color: #fafafa; }
+        .marksheet-title { text-align: center; color: #1b5e20; font-weight: bold; font-size: 22px; margin-bottom: 20px; border-bottom: 2px dashed #1b5e20; padding-bottom: 10px; }
+        .info-table, .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .info-table td { padding: 8px; font-size: 15px; color: #333; }
+        .info-table td:first-child { font-weight: bold; width: 35%; color: #1b5e20; }
+        .marks-table th, .marks-table td { border: 1px solid #ddd; padding: 10px; text-align: center; font-size: 15px; }
+        .marks-table th { background-color: #1b5e20; color: white; }
+        .status-badge { display: inline-block; padding: 5px 15px; font-weight: bold; border-radius: 20px; color: white; background-color: #2e7d32; }
+        .loading { display: none; text-align: center; font-weight: bold; color: #1b5e20; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">রহমতপুর হোসাইনিয়া ফয়জুল উলুম মাদরাসা</div>
+
+<div class="container">
+    <h3>পরীক্ষার ফলাফল অনুসন্ধান পোর্টাল</h3>
+    
+    <div class="form-group">
+        <label>মারহালা (শ্রেণী):</label>
+        <select id="marhala">
+            <option value="takmil">তাকমীল</option>
+            <option value="fazilat">ফজীলত</option>
+            <option value="sanabia">সানাবিয়া</option>
+            <option value="mutawassitah">মুতাওয়াসসিতাহ</option>
+            <option value="ibtidaiyah">ইবতিদাইয়্যাহ</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>পরীক্ষার সন:</label>
+        <select id="year">
+            <option value="2026">২০২৬</option>
+            <option value="2025">২০২৫</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>রোল নম্বর:</label>
+        <input type="number" id="roll" placeholder="রোল নম্বর লিখুন" required>
+    </div>
+
+    <div class="form-group">
+        <label>রেজিস্ট্রেশন নম্বর:</label>
+        <input type="number" id="reg" placeholder="রেজিস্ট্রেশন নম্বর লিখুন" required>
+    </div>
+
+    <button class="btn" onclick="searchResult()">ফলাফল খুঁজুন</button>
+    
+    <div class="loading" id="loadingText">অনুগ্রহ করে অপেক্ষা করুন, ফলাফল খোঁজা হচ্ছে...</div>
+
+    <div class="result-box" id="resultBox">
+        <div class="marksheet-title">অফিসিয়াল মার্কশিট</div>
+        <table class="info-table">
+            <tr><td>শিক্ষার্থীর নাম:</td><td id="resName"></td></tr>
+            <tr><td>পিতার নাম:</td><td id="resFather"></td></tr>
+            <tr><td>মাদরাসার নাম:</td><td>রহমতপুর হোসাইনিয়া ফয়জুল উলুম মাদরাসা</td></tr>
+            <tr><td>রোল নম্বর:</td><td id="resRoll"></td></tr>
+            <tr><td>রেজিস্ট্রেশন নম্বর:</td><td id="resReg"></td></tr>
+        </table>
+        <table class="marks-table">
+            <thead>
+                <tr><th>विषয়ের নাম</th><th>প্রাপ্ত নম্বর</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>হাদীস-১ / ফিকহ</td><td id="m1"></td></tr>
+                <tr><td>হাদীস-২ / উসুল</td><td id="m2"></td></tr>
+                <tr><td>নাহব ও সরফ</td><td id="m3"></td></tr>
+                <tr><td>বাংলা ও ইংরেজি</td><td id="m4"></td></tr>
+                <tr style="font-weight: bold; background-color: #eee;"><td>মোট নম্বর</td><td id="resTotal"></td></tr>
+            </tbody>
+        </table>
+        <table class="info-table">
+            <tr><td>প্রাপ্ত জিপিএ:</td><td id="resGpa" style="font-weight: bold; color: #1b5e20;"></td></tr>
+            <tr><td>ফলাফল:</td><td><span class="status-badge" id="resDiv"></span></td></tr>
+        </table>
+        <button class="btn" style="background-color: #d84315;" onclick="window.print()">মার্কশিট প্রিন্ট করুন</button>
+    </div>
+</div>
+
+<script>
+    // ⚠️ এই নিচের লাইনে আপনার গুগল ক্লাউড লিংকটি (Web App URL) বসাবেন
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxwcw0xwbI3SqFs0p646hNYo9G5dK3U0FbUqBAYkD1CToiWzib4_mS94knos6cmNAjAGA/exec";
+
+    async function searchResult() {
+        const roll = document.getElementById('roll').value;
+        const reg = document.getElementById('reg').value;
+        const loadingText = document.getElementById('loadingText');
+        const resultBox = document.getElementById('resultBox');
+
+        if(!roll || !reg){ alert("রোল এবং রেজিস্ট্রেশন নম্বর সঠিকভাবে লিখুন।"); return; }
+        loadingText.style.display = "block"; resultBox.style.display = "none";
+
+        try {
+            const response = await fetch(`${GOOGLE_SCRIPT_URL}?roll=${roll}&reg=${reg}`);
+            const json = await response.json();
+            loadingText.style.display = "none";
+
+            if (json.status === "success") {
+                const student = json.data;
+                document.getElementById('resName').innerText = student.name;
+                document.getElementById('resFather').innerText = student.father_name;
+                document.getElementById('resRoll').innerText = student.roll;
+                document.getElementById('resReg').innerText = student.reg_no;
+                document.getElementById('m1').innerText = student.hadith_1 || student.fiqh || '0';
+                document.getElementById('m2').innerText = student.hadith_2 || '0';
+                document.getElementById('m3').innerText = student.nahw_sarf || '0';
+                document.getElementById('m4').innerText = student.bangla_english || '0';
+                document.getElementById('resTotal').innerText = student.total_marks;
+                document.getElementById('resGpa').innerText = student.gpa;
+                document.getElementById('resDiv').innerText = student.division;
+                resultBox.style.display = "block";
+            } else { alert("ফলাফল পাওয়া যায়নি। নম্বরগুলো আবার চেক করুন।"); }
+        } catch (error) { loadingText.style.display = "none"; alert("সার্ভার কানেকশন ত্রুটি!"); }
+    }
+</script>
+</body>
+</html>
